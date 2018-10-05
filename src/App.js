@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import './App.css'
-import { Container, Row, Alert } from 'reactstrap'
+import { Alert, Col, Container, Jumbotron, Row } from 'reactstrap'
+import OriginForm from './OriginForm'
+import DestinationForm from './DestinationForm'
 
 const steps = [
   {
@@ -55,12 +57,34 @@ class App extends Component {
   render() {
     return (
       <div className="App">
+        <Jumbotron className="text-dark text-center">
+          <h1 className="display-3">Simulador de remesas</h1>
+          <p className="lead">
+            Esta página es una guía para la integración de usuarios de Bitex para
+            realizar remesas internacionales autogestionadas.
+          </p>
+          <hr className="my-2" />
+          <p>
+            Para más información, puede visitar <a href="https:/bitex.la/developers">https:/bitex.la/developers</a>,
+            o bien contactarnos a <a href="mailto:developers@bitex.la">developers@bitex.la</a>
+          </p>
+        </Jumbotron>
         <Container>
+          <Row>
+            <Col>
+              <OriginForm />
+            </Col>
+            <Col>
+              <DestinationForm />
+            </Col>
+          </Row>
+          <hr className="border-light" />
+          <h4 className="mb-3">Pasos a seguir:</h4>
           {
             steps.map((step, index) => (
               <Row key={index}>
                 <Alert color="success" className="w-100">
-                  { step.description }
+                  <p>{ step.description }</p>
                   <a href={step.url}>{ step.url }</a>
                 </Alert>
               </Row>
