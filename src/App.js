@@ -1,8 +1,7 @@
 import React, { Component } from 'react'
-import './App.css'
 import { Alert, Col, Container, Jumbotron, Row } from 'reactstrap'
-import OriginForm from './OriginForm'
-import DestinationForm from './DestinationForm'
+import OriginForm from './components/OriginForm'
+import DestinationForm from './components/DestinationForm'
 
 const steps = [
   {
@@ -53,10 +52,16 @@ const steps = [
   }
 ]
 
+const appStyle = {
+  backgroundColor: '#282c34',
+  minHeight: '100vh',
+  color: 'white'
+}
+
 class App extends Component {
   render() {
     return (
-      <div className="App">
+      <div style={appStyle}>
         <Jumbotron className="text-dark text-center">
           <h1 className="display-3">Simulador de remesas</h1>
           <p className="lead">

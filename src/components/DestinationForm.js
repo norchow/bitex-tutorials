@@ -1,10 +1,14 @@
 import React, { Component, Fragment } from 'react'
-import { FormGroup, Input, InputGroup, InputGroupAddon, Label } from 'reactstrap'
+import { FormGroup, Input, InputGroup, InputGroupAddon, Label, Alert } from 'reactstrap'
 import ReactFlagsSelect from 'react-flags-select'
+import { connect } from 'react-redux'
+import { fetchAskPrice } from '../store/actions'
 
 class DestinationForm extends Component {
-  state = {}
-  
+  onChangeCountry = (value) => {
+    this.props.handleCountryChange(value)
+  }
+
   render() {
     return (
       <Fragment>
@@ -34,13 +38,22 @@ class DestinationForm extends Component {
           <ReactFlagsSelect
             countries={["AR", "CL", "UY", "PY"]}
             placeholder="Elija país de Destino"
+            className="bg-light p-2 rounded"
+            onSelect={this.onChangeCountry}
           />
+          {
+            (this.props.ask) ?
+              <Alert className="p-1 mt-2 mb-0" color="danger">
+                Mejor Ask: {this.props.ask} {this.props.destination.currency}
+              </Alert>
+              : null
+          }
         </FormGroup>
         <FormGroup tag="fieldset">
           <legend>Monto a recibir</legend>
           <InputGroup>
             <InputGroupAddon addonType="prepend">
-              {this.state.currency || 'ARS'}
+            {this.props.destination.currency.toUpperCase()}
             </InputGroupAddon>
             <Input type="number" name="amount_to_receive" />
           </InputGroup>
@@ -50,4 +63,14 @@ class DestinationForm extends Component {
   }
 }
 
-export default DestinationForm
+const mapStateToProps = state => ({
+  ask: state.ask,
+  destination: state.destination
+})
+const mapDispatchToProps = dispatch => ({
+  handleCountryChange(country){
+    dispatch(fetchAskPrice(country))
+  }
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(DestinationForm)

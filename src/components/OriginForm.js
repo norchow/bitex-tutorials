@@ -1,6 +1,8 @@
 import React, { Component, Fragment } from 'react'
-import { FormGroup, Input, InputGroup, InputGroupAddon, Label } from 'reactstrap'
+import { FormGroup, Input, InputGroup, InputGroupAddon, Label, Alert } from 'reactstrap'
 import ReactFlagsSelect from 'react-flags-select'
+import { connect } from 'react-redux'
+import { fetchBidPrice } from '../store/actions'
 
 class OriginForm extends Component {
   state = {
@@ -9,6 +11,10 @@ class OriginForm extends Component {
 
   onIntermediaryChange = (e) => {
     this.setState({intermediary: e.currentTarget.value === 'intermediary'})
+  }
+
+  onChangeCountry = (value) => {
+    this.props.handleCountryChange(value)
   }
 
   render() {
@@ -63,13 +69,22 @@ class OriginForm extends Component {
           <ReactFlagsSelect
             countries={["AR", "CL", "UY", "PY"]}
             placeholder="Elija país de Origen"
+            className="bg-light p-2 rounded"
+            onSelect={this.onChangeCountry}
           />
+          {
+            (this.props.bid) ?
+              <Alert className="p-1 mt-2 mb-0" color="danger">
+                Mejor Bid: {this.props.bid} {this.props.origin.currency}
+              </Alert>
+              : null
+          }
         </FormGroup>
         <FormGroup tag="fieldset">
           <legend>Monto a transferir</legend>
           <InputGroup>
             <InputGroupAddon addonType="prepend">
-              {this.state.currency || 'ARS'}
+              {this.props.origin.currency.toUpperCase()}
             </InputGroupAddon>
             <Input type="number" name="amount_to_send" />
           </InputGroup>
@@ -79,4 +94,14 @@ class OriginForm extends Component {
   }
 }
 
-export default OriginForm
+const mapStateToProps = state => ({
+  bid: state.bid,
+  origin: state.origin
+})
+const mapDispatchToProps = dispatch => ({
+  handleCountryChange(country){
+    dispatch(fetchBidPrice(country))
+  }
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(OriginForm)
