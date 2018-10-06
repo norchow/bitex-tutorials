@@ -2,7 +2,8 @@ import {
   SET_ORIGIN_COUNTRY,
   SET_DESTINATION_COUNTRY,
   SET_BID_PRICE,
-  SET_ASK_PRICE
+  SET_ASK_PRICE,
+  CHANGE_SENDER
 } from './actionTypes'
 
 const remittances = (state = {}, action) => {
@@ -32,6 +33,11 @@ const remittances = (state = {}, action) => {
       return {
         ...state,
         ask: Math.ceil(action.value * 100) / 100
+      }
+    case CHANGE_SENDER:
+      return {
+        ...state,
+        sender: action.sender
       }
     default:
       return state

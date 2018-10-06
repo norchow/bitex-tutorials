@@ -2,15 +2,11 @@ import React, { Component, Fragment } from 'react'
 import { FormGroup, Input, InputGroup, InputGroupAddon, Label, Alert } from 'reactstrap'
 import ReactFlagsSelect from 'react-flags-select'
 import { connect } from 'react-redux'
-import { fetchBidPrice } from '../store/actions'
+import { fetchBidPrice, changeSender } from '../store/actions'
 
 class OriginForm extends Component {
-  state = {
-    intermediary: false
-  }
-
-  onIntermediaryChange = (e) => {
-    this.setState({intermediary: e.currentTarget.value === 'intermediary'})
+  onSenderChange = (e) => {
+    this.props.handleSenderChange(e.currentTarget.value)
   }
 
   onChangeCountry = (value) => {
@@ -27,8 +23,8 @@ class OriginForm extends Component {
               <Input type="radio"
                 name="sender"
                 value="person"
-                checked={!this.state.intermediary}
-                onChange={this.onIntermediaryChange} 
+                checked={!this.props.intermediary}
+                onChange={this.onSenderChange} 
               />{' '}
               Usuario a cuenta propia
             </Label>
@@ -38,15 +34,15 @@ class OriginForm extends Component {
               <Input type="radio"
                 name="sender"
                 value="intermediary"
-                checked={this.state.intermediary}
-                onChange={this.onIntermediaryChange}
+                checked={this.props.intermediary}
+                onChange={this.onSenderChange}
               />{' '}
               Intermediario
             </Label>
           </FormGroup>
         </FormGroup>
         {
-          (this.state.intermediary) ?
+          (this.props.intermediary) ?
             <FormGroup tag="fieldset">
               <legend>La institución dispone de capital de trabajo en Bitex?</legend>
               <FormGroup check>
@@ -95,12 +91,16 @@ class OriginForm extends Component {
 }
 
 const mapStateToProps = state => ({
+  intermediary: state.sender === 'intermediary',
   bid: state.bid,
   origin: state.origin
 })
 const mapDispatchToProps = dispatch => ({
   handleCountryChange(country){
     dispatch(fetchBidPrice(country))
+  },
+  handleSenderChange(sender){
+    dispatch(changeSender(sender))
   }
 })
 

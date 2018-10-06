@@ -50,3 +50,10 @@ export function fetchAskPriceSuccess(value){
     value
   }
 }
+
+export function changeSender(sender){
+  return {
+    type: types.CHANGE_SENDER,
+    sender
+  }
+}
