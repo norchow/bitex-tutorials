@@ -9,7 +9,7 @@ class OriginForm extends Component {
     this.props.handleSenderChange(e.currentTarget.value)
   }
 
-  onChangeCountry = (value) => {
+  onCountryChange = (value) => {
     this.props.handleCountryChange(value)
   }
 
@@ -66,7 +66,7 @@ class OriginForm extends Component {
             countries={["AR", "CL", "UY", "PY"]}
             placeholder="Elija país de Origen"
             className="bg-light p-2 rounded"
-            onSelect={this.onChangeCountry}
+            onSelect={this.onCountryChange}
           />
           {
             (this.props.bid) ?
@@ -82,7 +82,7 @@ class OriginForm extends Component {
             <InputGroupAddon addonType="prepend">
               {this.props.origin.currency.toUpperCase()}
             </InputGroupAddon>
-            <Input type="number" name="amount_to_send" />
+            <Input type="number" name="amount_to_send" onKeyUp={this.onAmountChange}/>
           </InputGroup>
         </FormGroup>
       </Fragment>
