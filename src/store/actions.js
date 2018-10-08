@@ -12,7 +12,7 @@ const currenciesByCountry = {
 export function fetchBidPrice(country){
   return (dispatch) => {
     dispatch({
-      type: types.SET_ORIGIN_COUNTRY,
+      type: types.SET_DESTINATION_COUNTRY,
       country,
       currency: currenciesByCountry[country]
     })
@@ -33,7 +33,7 @@ export function fetchBidPriceSuccess(value){
 export function fetchAskPrice(country){
   return (dispatch) => {
     dispatch({
-      type: types.SET_DESTINATION_COUNTRY,
+      type: types.SET_ORIGIN_COUNTRY,
       country,
       currency: currenciesByCountry[country]
     })
@@ -55,5 +55,19 @@ export function changeSender(sender){
   return {
     type: types.CHANGE_SENDER,
     sender
+  }
+}
+
+export function changeOriginAmount(value){
+  return {
+    type: types.CHANGE_ORIGIN_AMOUNT,
+    value
+  }
+}
+
+export function changeDestinationAmount(value){
+  return {
+    type: types.CHANGE_DESTINATION_AMOUNT,
+    value
   }
 }

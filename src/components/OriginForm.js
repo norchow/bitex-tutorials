@@ -2,15 +2,17 @@ import React, { Component, Fragment } from 'react'
 import { FormGroup, Input, InputGroup, InputGroupAddon, Label, Alert } from 'reactstrap'
 import ReactFlagsSelect from 'react-flags-select'
 import { connect } from 'react-redux'
-import { fetchBidPrice, changeSender } from '../store/actions'
+import { fetchAskPrice, changeSender, changeOriginAmount } from '../store/actions'
 
 class OriginForm extends Component {
   onSenderChange = (e) => {
     this.props.handleSenderChange(e.currentTarget.value)
   }
-
   onCountryChange = (value) => {
     this.props.handleCountryChange(value)
+  }
+  onAmountChange = (e) => {
+    this.props.handleAmountChange(e.currentTarget.value)
   }
 
   render() {
@@ -24,7 +26,7 @@ class OriginForm extends Component {
                 name="sender"
                 value="person"
                 checked={!this.props.intermediary}
-                onChange={this.onSenderChange} 
+                onChange={this.onSenderChange}
               />{' '}
               Usuario a cuenta propia
             </Label>
@@ -69,9 +71,9 @@ class OriginForm extends Component {
             onSelect={this.onCountryChange}
           />
           {
-            (this.props.bid) ?
+            (this.props.ask) ?
               <Alert className="p-1 mt-2 mb-0" color="danger">
-                Mejor Bid: {this.props.bid} {this.props.origin.currency}
+                Mejor Ask: {this.props.ask} {this.props.origin.currency}
               </Alert>
               : null
           }
@@ -82,7 +84,11 @@ class OriginForm extends Component {
             <InputGroupAddon addonType="prepend">
               {this.props.origin.currency.toUpperCase()}
             </InputGroupAddon>
-            <Input type="number" name="amount_to_send" onKeyUp={this.onAmountChange}/>
+            <Input type="number"
+              name="amount_to_send"
+              onKeyUp={this.onAmountChange}
+              disabled={this.props.amount_edited === 'destination'}
+            />
           </InputGroup>
         </FormGroup>
       </Fragment>
@@ -92,15 +98,19 @@ class OriginForm extends Component {
 
 const mapStateToProps = state => ({
   intermediary: state.sender === 'intermediary',
-  bid: state.bid,
-  origin: state.origin
+  ask: state.ask,
+  origin: state.origin,
+  amount_edited: state.amount_edited
 })
 const mapDispatchToProps = dispatch => ({
   handleCountryChange(country){
-    dispatch(fetchBidPrice(country))
+    dispatch(fetchAskPrice(country))
   },
   handleSenderChange(sender){
     dispatch(changeSender(sender))
+  },
+  handleAmountChange(value){
+    dispatch(changeOriginAmount(value))
   }
 })
 

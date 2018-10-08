@@ -2,11 +2,14 @@ import React, { Component, Fragment } from 'react'
 import { FormGroup, Input, InputGroup, InputGroupAddon, Label, Alert } from 'reactstrap'
 import ReactFlagsSelect from 'react-flags-select'
 import { connect } from 'react-redux'
-import { fetchAskPrice } from '../store/actions'
+import { fetchBidPrice, changeDestinationAmount } from '../store/actions'
 
 class DestinationForm extends Component {
   onChangeCountry = (value) => {
     this.props.handleCountryChange(value)
+  }
+  onAmountChange = (e) => {
+    this.props.handleAmountChange(e.currentTarget.value)
   }
 
   render() {
@@ -42,9 +45,9 @@ class DestinationForm extends Component {
             onSelect={this.onChangeCountry}
           />
           {
-            (this.props.ask) ?
+            (this.props.bid) ?
               <Alert className="p-1 mt-2 mb-0" color="danger">
-                Mejor Ask: {this.props.ask} {this.props.destination.currency}
+                Mejor Bid: {this.props.bid} {this.props.destination.currency}
               </Alert>
               : null
           }
@@ -55,7 +58,11 @@ class DestinationForm extends Component {
             <InputGroupAddon addonType="prepend">
             {this.props.destination.currency.toUpperCase()}
             </InputGroupAddon>
-            <Input type="number" name="amount_to_receive" />
+            <Input type="number"
+              name="amount_to_receive"
+              onKeyUp={this.onAmountChange}
+              disabled={this.props.amount_edited === 'origin'}
+            />
           </InputGroup>
         </FormGroup>
       </Fragment>
@@ -64,12 +71,16 @@ class DestinationForm extends Component {
 }
 
 const mapStateToProps = state => ({
-  ask: state.ask,
-  destination: state.destination
+  bid: state.bid,
+  destination: state.destination,
+  amount_edited: state.amount_edited
 })
 const mapDispatchToProps = dispatch => ({
   handleCountryChange(country){
-    dispatch(fetchAskPrice(country))
+    dispatch(fetchBidPrice(country))
+  },
+  handleAmountChange(value){
+    dispatch(changeDestinationAmount(value))
   }
 })
 

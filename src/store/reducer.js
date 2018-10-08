@@ -3,7 +3,9 @@ import {
   SET_DESTINATION_COUNTRY,
   SET_BID_PRICE,
   SET_ASK_PRICE,
-  CHANGE_SENDER
+  CHANGE_SENDER,
+  CHANGE_ORIGIN_AMOUNT,
+  CHANGE_DESTINATION_AMOUNT
 } from './actionTypes'
 
 const remittances = (state = {}, action) => {
@@ -38,6 +40,18 @@ const remittances = (state = {}, action) => {
       return {
         ...state,
         sender: action.sender
+      }
+    case CHANGE_ORIGIN_AMOUNT:
+      return {
+        ...state,
+        amount_edited: (action.value) ? 'origin' : '',
+        value: action.value
+      }
+    case CHANGE_DESTINATION_AMOUNT:
+      return {
+        ...state,
+        amount_edited: (action.value) ? 'destination' : '',
+        value: action.value
       }
     default:
       return state
