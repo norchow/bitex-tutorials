@@ -3,58 +3,10 @@ import { Alert, Col, Container, Jumbotron, Row } from 'reactstrap'
 import OriginForm from './components/OriginForm'
 import DestinationForm from './components/DestinationForm'
 import { connect } from 'react-redux'
+import StepsList from './components/StepsList'
 
 const roundedCeil = (num, decimals) => Math.ceil(num * Math.pow(10, decimals)) / Math.pow(10, decimals)
 const roundedFloor = (num, decimals) => Math.floor(num * Math.pow(10, decimals)) / Math.pow(10, decimals)
-
-const steps = [
-  {
-    description: 'Crear el usuario destinatario',
-    url: 'https://bitex.la/developers#resellers'
-  },
-  {
-    description: 'Carga de perfil para los usuarios',
-    url: 'https://bitex.la/developers#account-information',
-    has_lag: true,
-    impersonate: true
-  },
-  {
-    description: 'Comprar BTC',
-    url: 'https://bitex.la/developers#api_create_a_bid_buy_order'
-  },
-  {
-    description: 'Transferir BTC desde la cuenta de naranja a la del usuario destinatario',
-    substeps: [
-      {
-        description: 'Obtener la dirección de depósito de BTC del usuario destinatario. El request devuelve el campo "btc_deposit_address"',
-        url: 'https://bitex.la/developers#api_profile_and_balances',
-        impersonate: true
-      },
-      {
-        description: 'Hacer un retiro de BTC hacia esa dirección:',
-        url: 'https://bitex.la/developers#funding-btc'
-      }
-    ]
-  },
-  {
-    description: 'Vender BTC',
-    url: 'https://bitex.la/developers#api_create_an_ask_sell_order',
-    impersonate: true
-  },
-  {
-    description: 'Crear instrucción de retiro',
-    url: 'https://bitex.la/developers#api_create_a_usd_withdrawal_instruction',
-    impersonate: true
-  },
-  {
-    description: 'Pedir un retiro como el usuario',
-    url: 'https://bitex.la/developers#api_create_a_usd_withdrawal'
-  },
-  {
-    description: 'Consultar el estado de un retiro',
-    url: 'https://bitex.la/developers#api_show_a_usd_withdrawal'
-  }
-]
 
 const appStyle = {
   backgroundColor: '#282c34',
@@ -63,7 +15,6 @@ const appStyle = {
 }
 
 class App extends Component {
-
   generatedBtc() {
     return roundedFloor(this.props.value / this.props.ask, 8)
   }
@@ -73,7 +24,6 @@ class App extends Component {
   generatedTotal() {
     return roundedCeil((this.props.value / this.props.ask) * this.props.bid * .99, 2)
   }
-
   neededBtc() {
     return roundedFloor(this.props.value / this.props.bid, 8)
   }
@@ -82,6 +32,12 @@ class App extends Component {
   }
   neededTotal() {
     return roundedCeil(((this.props.value / this.props.bid) * this.props.ask) / .99, 2)
+  }
+  getOriginTickerUrl() {
+    return `https://bitex.la/api-v1/rest/btc_${this.props.origin.currency.toLowerCase()}/market/ticker`
+  }
+  getDestinationTickerUrl() {
+    return `https://bitex.la/api-v1/rest/btc_${this.props.destination.currency.toLowerCase()}/market/ticker`
   }
 
   render() {
@@ -117,16 +73,26 @@ class App extends Component {
                     <p>{this.props.value} {this.props.origin.currency} / {this.props.ask} = {this.generatedBtc()} BTC</p>
                     <p>{this.generatedBtc()} x {this.props.bid} {this.props.destination.currency} = {this.generatedFiat()} {this.props.destination.currency}</p>
                     <p>{this.generatedFiat()} {this.props.destination.currency} - 1% fee (*) = {this.generatedTotal()} {this.props.destination.currency}</p>
-                    <p>Monto final a recibir: {this.generatedTotal()} {this.props.destination.currency}</p>
+                    <p className="font-weight-bold">Monto final a recibir: {this.generatedTotal()} {this.props.destination.currency}</p>
                     <p>(*) Para calcular el fee, se multiplica por 0.99, ya que esta es la proporción que percibe el receptor.</p>
+                    <p>
+                      Los datos del mejor Ask y mejor Bid fueron obtenidos de los siguientes endpoints, respectivamente: <br/>
+                      <a href={this.getOriginTickerUrl()} target="_blank" rel="noopener noreferrer">{ this.getOriginTickerUrl() }</a> <br/>
+                      <a href={this.getDestinationTickerUrl()} target="_blank" rel="noopener noreferrer">{ this.getDestinationTickerUrl() }</a> <br/>
+                    </p>
                   </Alert>
                   :
                   <Alert color="info" className="w-100">
                     <p>{this.props.value} {this.props.destination.currency} / {this.props.bid} = {this.neededBtc()} BTC</p>
                     <p>{this.neededBtc()} x {this.props.ask} {this.props.origin.currency} = {this.neededFiat()} {this.props.origin.currency}</p>
                     <p>{this.neededFiat()} {this.props.origin.currency} + 1% fee (*) = {this.neededTotal()} {this.props.origin.currency}</p>
-                    <p>Monto final a transferir: {this.neededTotal()} {this.props.origin.currency}</p>
+                    <p className="font-weight-bold">Monto final a transferir: {this.neededTotal()} {this.props.origin.currency}</p>
                     <p>(*) Para calcular el fee, se divide por 0.99, ya que esta es la proporción que percibe el receptor.</p>
+                    <p>
+                      Los datos del mejor Ask y mejor Bid fueron obtenidos de los siguientes endpoints, respectivamente: <br/>
+                      <a href={this.getOriginTickerUrl()} target="_blank" rel="noopener noreferrer">{ this.getOriginTickerUrl() }</a> <br/>
+                      <a href={this.getDestinationTickerUrl()} target="_blank" rel="noopener noreferrer">{ this.getDestinationTickerUrl() }</a> <br/>
+                    </p>
                   </Alert>
               }
               </Row>
@@ -134,16 +100,7 @@ class App extends Component {
           }
           <hr className="border-light" />
           <h4 className="mb-3">Pasos a seguir:</h4>
-          {
-            steps.map((step, index) => (
-              <Row key={index}>
-                <Alert color="success" className="w-100">
-                  <p>{ step.description }</p>
-                  <a href={step.url}>{ step.url }</a>
-                </Alert>
-              </Row>
-            ))
-          }
+          <StepsList />
         </Container>
       </div>
     )

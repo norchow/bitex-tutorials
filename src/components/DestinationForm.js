@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react'
 import { FormGroup, Input, InputGroup, InputGroupAddon, Label, Alert } from 'reactstrap'
 import ReactFlagsSelect from 'react-flags-select'
 import { connect } from 'react-redux'
-import { fetchBidPrice, changeDestinationAmount } from '../store/actions'
+import { fetchBidPrice, changeDestinationAmount, changeReceiver } from '../store/actions'
 
 class DestinationForm extends Component {
   onChangeCountry = (value) => {
@@ -10,6 +10,9 @@ class DestinationForm extends Component {
   }
   onAmountChange = (e) => {
     this.props.handleAmountChange(e.currentTarget.value)
+  }
+  onReceiverChange = (e) => {
+    this.props.handleReceiverChange(e.currentTarget.value)
   }
 
   render() {
@@ -22,6 +25,8 @@ class DestinationForm extends Component {
               <Input type="radio"
                 name="receiver"
                 value="self"
+                checked={this.props.receiver === 'self'}
+                onChange={this.onReceiverChange}
               />{' '}
               A una cuenta propia (mismo usuario que envía)
             </Label>
@@ -31,6 +36,8 @@ class DestinationForm extends Component {
               <Input type="radio"
                 name="receiver"
                 value="third_party"
+                checked={this.props.receiver === 'third_party'}
+                onChange={this.onReceiverChange}
               />{' '}
               A un tercero.
             </Label>
@@ -73,7 +80,8 @@ class DestinationForm extends Component {
 const mapStateToProps = state => ({
   bid: state.bid,
   destination: state.destination,
-  amount_edited: state.amount_edited
+  amount_edited: state.amount_edited,
+  receiver: state.receiver
 })
 const mapDispatchToProps = dispatch => ({
   handleCountryChange(country){
@@ -81,6 +89,9 @@ const mapDispatchToProps = dispatch => ({
   },
   handleAmountChange(value){
     dispatch(changeDestinationAmount(value))
+  },
+  handleReceiverChange(value){
+    dispatch(changeReceiver(value))
   }
 })
 

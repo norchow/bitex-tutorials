@@ -2,11 +2,14 @@ import React, { Component, Fragment } from 'react'
 import { FormGroup, Input, InputGroup, InputGroupAddon, Label, Alert } from 'reactstrap'
 import ReactFlagsSelect from 'react-flags-select'
 import { connect } from 'react-redux'
-import { fetchAskPrice, changeSender, changeOriginAmount } from '../store/actions'
+import { fetchAskPrice, changeSender, changeOriginAmount, changePrefunded } from '../store/actions'
 
 class OriginForm extends Component {
   onSenderChange = (e) => {
     this.props.handleSenderChange(e.currentTarget.value)
+  }
+  onPrefundedChange = (e) => {
+    this.props.handlePrefundedChange(e.currentTarget.value)
   }
   onCountryChange = (value) => {
     this.props.handleCountryChange(value)
@@ -49,13 +52,23 @@ class OriginForm extends Component {
               <legend>La institución dispone de capital de trabajo en Bitex?</legend>
               <FormGroup check>
                 <Label check>
-                  <Input type="radio" name="work_capital" />{' '}
+                  <Input type="radio"
+                    name="prefunded"
+                    value="yes"
+                    checked={this.props.prefunded}
+                    onChange={this.onPrefundedChange}
+                  />{' '}
                   Sí
                 </Label>
               </FormGroup>
               <FormGroup check>
                 <Label check>
-                  <Input type="radio" name="work_capital" />{' '}
+                  <Input type="radio"
+                    name="prefunded"
+                    value="no"
+                    checked={!this.props.prefunded}
+                    onChange={this.onPrefundedChange}
+                  />{' '}
                   No
                 </Label>
               </FormGroup>
@@ -100,7 +113,8 @@ const mapStateToProps = state => ({
   intermediary: state.sender === 'intermediary',
   ask: state.ask,
   origin: state.origin,
-  amount_edited: state.amount_edited
+  amount_edited: state.amount_edited,
+  prefunded: state.prefunded === 'yes'
 })
 const mapDispatchToProps = dispatch => ({
   handleCountryChange(country){
@@ -111,6 +125,9 @@ const mapDispatchToProps = dispatch => ({
   },
   handleAmountChange(value){
     dispatch(changeOriginAmount(value))
+  },
+  handlePrefundedChange(value){
+    dispatch(changePrefunded(value))
   }
 })
 

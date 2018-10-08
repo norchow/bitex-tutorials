@@ -71,3 +71,17 @@ export function changeDestinationAmount(value){
     value
   }
 }
+
+export function changePrefunded(value){
+  return {
+    type: types.CHANGE_PREFUNDED,
+    value
+  }
+}
+
+export function changeReceiver(value){
+  return {
+    type: types.CHANGE_RECEIVER,
+    value
+  }
+}
